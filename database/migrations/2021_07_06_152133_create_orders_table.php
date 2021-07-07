@@ -20,7 +20,7 @@ class CreateOrdersTable extends Migration
             $table->integer('tax_rate')->default(20);
             $table->double('tax_amount',8,2);
             $table->timestamps();
-            $table->timestamps('complite_times_tamp');
+            $table->timestamp('complete_timestamp')->nullable();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
 
         });
