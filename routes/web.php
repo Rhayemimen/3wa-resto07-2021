@@ -11,11 +11,12 @@
 |
 */
 
-Route::get('/', 'AppController@welcome');
-
-Route::get('/about', 'AboutController@hello');
-
+Route::get('/', 'AppController@welcome')->name('welcome');
+//ce name il va s'afficher dans le tableau (php artisan route:list);
 
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+
+Route::resource('booking','BookingController');
+//c'est pour créer les 7 ressources
