@@ -15,7 +15,10 @@
                     @endauth
                 </div>
             @endif
-
+            @foreach($meals as $meal)
+                <h3>{{ $meal->name }}</h3>
+                <p>{{ $meal->description }}</p>
+            @endforeach
             <div class="content">
                 <div class="title m-b-md">
                     {{$msg}}
