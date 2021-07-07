@@ -14,6 +14,9 @@ class BookingController extends Controller
     public function index()
     {
         return view('booking.index');
+        
+        $bookings = Booking::all();
+        return view ('booking.index', ['bookings' => $bookings]);
     }
 
     /**
