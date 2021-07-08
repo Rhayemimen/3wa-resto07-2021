@@ -18,5 +18,5 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
-Route::resource('booking','BookingController');
+Route::resource('booking','BookingController')->middleware('auth');// meme si on veux entrer à la page par l'url on peux pas tant qu'il n'est pas authentifier
 //c'est pour créer les 7 ressources

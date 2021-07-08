@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Booking;
 
 class BookingController extends Controller
@@ -14,8 +15,18 @@ class BookingController extends Controller
      */
     public function index()
     {
-        $bookings = Booking::all();
-        return view('booking.index', ['bookings' => $bookings]);
+        //$bookings = Auth::user()->bookings()->get();//apporter les bookings de user authentifier pas tous les bookings 
+        
+        $comingBookings = Auth::user()->bookings()->comingBookings()->get();
+        $passedBookings = Auth::user()->bookings()->passedBookings()->get();
+
+        return view('booking.index', 
+        [
+            'comingBookings' => $comingBookings,
+            'passedBookings' => $passedBookings
+        ]);
+
+
     }
 
     /**
