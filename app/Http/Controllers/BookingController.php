@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+
 use App\Booking;
+use App\Mail\NewBooking;
 
 class BookingController extends Controller
 {
@@ -50,26 +53,25 @@ class BookingController extends Controller
     public function store(Request $request)
     {
         // Valider le formulaite puis afficher des erreure 
-        $request->validate([
-            'date' => 'required|date',
-            'time' => 'required',
-            'nbr' => 'required|min:1|max:15',
-        ]);
+        $request->validate($this->validationRules());     
 
         $booking = new Booking;
 
         $booking->user_id = Auth::id();
     
-        $booking->booking_date = $request->date;
+        $booking->booking_date = $request->booking_date;
 
-        $booking->booking_time = $request->time;
+        $booking->booking_time = $request->booking_time;
 
-        $booking->seats_nbr = $request->nbr;
+        $booking->seats_nbr = $request->seats_nbr;
     
         $booking->save();
 
+        //envoyer un mail au moment de la confirmation de la création
+        Mail::to(Auth::user()->email)->send(new NewBooking($booking));
+
         //apres la redirection on afficher un message
-        return redirect()->route('booking.index')->with('addBooking', 'New Booking added successfully !');
+        return redirect()->route('booking.index')->with('bookingNotification', 'New booking added successfully !');
     }
 
     /**
@@ -78,12 +80,15 @@ class BookingController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Booking $booking)//si on met $booking une instenciation de la classe Booking on n'est pas obliger de mettre ::find()
+    public function show(Booking $booking)//si on met $booking une instenciation de la classe Booking (au lieu de $id) on n'est pas obliger de mettre ::find()
     {
+        //return view('booking.show', ['booking' => Booking::find($id)]);
         return view('booking.show',
         [
             'booking' => $booking
         ]);
+
+        // ou return view('booking.show')->with('booking', $booking);
     }
 
     /**
@@ -92,9 +97,15 @@ class BookingController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Booking $booking)
     {
-        //
+        return view('booking.edit',
+        [
+            'booking' => $booking
+        ]);
+
+        //return view('booking.edit', compact('booking'));
+        //var_dump($request) = dd($request);
     }
 
     /**
@@ -104,9 +115,15 @@ class BookingController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Booking $booking)
     {
-        //
+        $validatedData = $request->validate($this->validationRules()); 
+
+        $booking -> update($validatedData);
+        //c'est un enregistrement de masse
+
+        return redirect()->route('booking.index')->with('bookingNotification', 'Update booking successfully !');
+
     }
 
     /**
@@ -117,6 +134,21 @@ class BookingController extends Controller
      */
     public function destroy($id)
     {
-        //
+
+        $booking = Booking::find($id);
+
+        $booking->delete();
+        
+        return redirect()->route('booking.index')->with('bookingNotification', 'Booking deleted successfully !');
+    }
+
+    private function validationRules()
+    {
+        return 
+        [
+            'booking_date' => 'required|date',
+            'booking_time' => 'required',
+            'seats_nbr' => 'required|min:1|max:15',
+        ];
     }
 }

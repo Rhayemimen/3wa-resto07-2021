@@ -8,6 +8,9 @@ class Booking extends Model
 {
     protected $dates = ['booking_date'];//cette méthode permet de récupérer les dates apporter de la base de donnée en farmat date (pas string)
 
+    protected $guarded = [];//c'est le contraire de fillable
+    //protected $fillable = ['date','time','nbr'];//c'est pour autoriser l'enregistrement en masse comme en update
+
     public function user()
     {
         return $this->belongsTo('App\User');

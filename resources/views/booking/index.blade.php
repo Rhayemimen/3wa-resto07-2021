@@ -1,9 +1,11 @@
 @extends('layouts.app')
+
+
 @section('content')
 
-@if (session('addBooking'))
+@if (session('bookingNotification'))
     <div class="alert alert-success alert-dismissible fade show">
-        {{session('addBooking')}}
+        {{session('bookingNotification')}}
     </div>
 @endif
 
@@ -17,11 +19,13 @@
             <li class="list-group-item list-group-item-action">No coming bookings</li>
         @else
             @foreach ($comingBookings as $booking)
-            <li class="list-group-item list-group-item-action">
+            <a href="{{ route('booking.show', $booking->id) }}">
+             <li class="list-group-item list-group-item-action">
                 Booking will be <strong>{{ $booking->booking_date->format('l, F jS Y') }}</strong>
                 at <strong>{{date('H:i',strtotime($booking->booking_time))}}</strong>
                 <span class="badge badge-primary badge-pill float-right">{{ $booking->seats_nbr }} persons</span>
             </li>
+            </a>
             <a href="{{ route('booking.show',$booking->id) }}" type="button" class="btn btn-outline-info">Detail</a>
             @endforeach
         @endif
